@@ -7,7 +7,9 @@
 
 ## 玩法 / 试玩
 
-直接双击 `index.html` 即可开始。也可以到展示站在线体验：[个人项目积累 · 互动实验室](../../index.html)。
+**在线版（GitHub Pages）：<https://pazderskitomikopj28-commits.github.io/vanilla-tetris/>**
+
+也可以直接双击 `index.html` 本地游玩，或在展示站体验：[个人项目积累 · 互动实验室](../../index.html)。
 
 | 操作 | 键盘 | 触屏 |
 | --- | --- | --- |
