@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>俄罗斯方块 · Vanilla Tetris | 个人项目积累</title>
+  <meta name="description" content="零依赖原生 JavaScript 俄罗斯方块：SRS 踢墙、7-bag 随机、Hold、幽灵方块、T-Spin 计分、Web Audio 芯片音乐与消行粒子特效。" />
+  <meta name="theme-color" content="#0a0e1a" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Cdefs%3E%3ClinearGradient%20id='g'%20x1='0'%20y1='0'%20x2='1'%20y2='1'%3E%3Cstop%20offset='0'%20stop-color='%2322d3ee'/%3E%3Cstop%20offset='1'%20stop-color='%236366f1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width='64'%20height='64'%20rx='14'%20fill='url(%23g)'/%3E%3Crect%20x='14'%20y='14'%20width='16'%20height='16'%20rx='3'%20fill='white'/%3E%3Crect%20x='34'%20y='14'%20width='16'%20height='16'%20rx='3'%20fill='white' opacity='.85'/%3E%3Crect%20x='34'%20y='34'%20width='16'%20height='16'%20rx='3'%20fill='white' opacity='.7'/%3E%3Crect%20x='14'%20y='34'%20width='16'%20height='16'%20rx='3'%20fill='white' opacity='.55'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="g-top">
+    <a class="g-back" href="../../index.html">← 个人项目积累</a>
+    <h1 class="g-title">俄罗斯方块 <span class="mono g-sub">VANILLA TETRIS · 零依赖</span></h1>
+    <div class="g-actions">
+      <button class="g-icon-btn" id="music-toggle" aria-label="开关背景音乐" aria-pressed="true">
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+      </button>
+      <button class="g-icon-btn" id="sfx-toggle" aria-label="开关音效" aria-pressed="true">
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="g-layout">
+    <aside class="g-side">
+      <section class="panel">
+        <h2 class="panel-title mono">HOLD · 暂存</h2>
+        <canvas id="hold-canvas" aria-label="暂存的方块"></canvas>
+      </section>
+      <section class="panel g-stats">
+        <div class="stat-row"><span class="mono">分数</span><b class="mono" id="hud-score">0</b></div>
+        <div class="stat-row"><span class="mono">最高</span><b class="mono" id="hud-best">0</b></div>
+        <div class="stat-row"><span class="mono">等级</span><b class="mono" id="hud-level">1</b></div>
+        <div class="stat-row"><span class="mono">行数</span><b class="mono" id="hud-lines">0</b></div>
+        <div class="stat-row combo-row" id="hud-combo-row" hidden><span class="mono">连击</span><b class="mono" id="hud-combo">×0</b></div>
+      </section>
+      <section class="panel g-keys">
+        <h2 class="panel-title mono">操作</h2>
+        <ul class="keys-list mono">
+          <li><kbd>←</kbd><kbd>→</kbd> 移动</li>
+          <li><kbd>↓</kbd> 软降</li>
+          <li><kbd>↑</kbd>/<kbd>X</kbd> 顺旋 <kbd>Z</kbd> 逆旋</li>
+          <li><kbd>空格</kbd> 硬降</li>
+          <li><kbd>C</kbd>/<kbd>Shift</kbd> 暂存</li>
+          <li><kbd>P</kbd>/<kbd>Esc</kbd> 暂停 <kbd>R</kbd> 重开</li>
+        </ul>
+      </section>
+    </aside>
+
+    <div class="g-board-wrap" id="board-wrap">
+      <canvas id="board" aria-label="俄罗斯方块游戏区域"></canvas>
+      <div class="overlay" id="overlay">
+        <div class="ov-card">
+          <h2 class="ov-title">准备好了吗？</h2>
+          <p class="ov-desc mono">SRS 踢墙 · 7-Bag · Hold · T-Spin</p>
+          <button class="g-btn g-btn-primary" id="ov-action">开始游戏</button>
+          <p class="ov-hint mono">按 空格 也可以开始</p>
+        </div>
+      </div>
+    </div>
+
+    <aside class="g-side">
+      <section class="panel">
+        <h2 class="panel-title mono">NEXT · 预览</h2>
+        <canvas id="next-canvas" aria-label="接下来的方块"></canvas>
+      </section>
+      <div class="g-btns">
+        <button class="g-btn" id="pause-btn">暂停</button>
+        <button class="g-btn" id="restart-btn">重开</button>
+      </div>
+    </aside>
+  </main>
+
+  <!-- 触屏控制（仅粗指针设备显示） -->
+  <div class="touch-controls" id="touch-controls" aria-label="触屏控制">
+    <button data-act="left" aria-label="左移">←</button>
+    <button data-act="rotate" aria-label="旋转">⟳</button>
+    <button data-act="right" aria-label="右移">→</button>
+    <button data-act="hold" aria-label="暂存">H</button>
+    <button data-act="down" aria-label="软降">↓</button>
+    <button data-act="drop" aria-label="硬降">⤓</button>
+  </div>
+
+  <footer class="g-foot mono">
+    复刻自 GitHub 经典的 Guideline 俄罗斯方块 · 加入芯片音乐 / 粒子特效等改进 ·
+    <a href="https://github.com/pazderskitomikopj28-commits/vanilla-tetris" target="_blank" rel="noopener">GitHub 源码 ↗</a>
+  </footer>
+
+  <script src="js/audio.js" defer></script>
+  <script src="js/game.js" defer></script>
+</body>
+</html>
