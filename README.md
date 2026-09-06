@@ -1,6 +1,6 @@
 # Vanilla Tetris · 零依赖俄罗斯方块
 
-> 「个人项目积累」第一期：复刻并改进 GitHub 上经典的 **Guideline 俄罗斯方块**。
+> 「个人项目积累」第一期作品：一款按现代规则（Tetris Guideline）完整实现的俄罗斯方块。
 > 纯原生 HTML / CSS / JavaScript，**零框架、零依赖、零构建**，克隆即玩。
 
 ![vanilla](https://img.shields.io/badge/dependency-0-brightgreen) ![license](https://img.shields.io/badge/license-MIT-blue)
@@ -32,7 +32,7 @@
 - **计分系统**：单行/双行/三行/Tetris、软降硬降加分、**连击 Combo**、**Back-to-Back ×1.5**、**T-Spin 三角判定**（含 Mini 与踢墙转体判定）
 - **等级加速曲线**：`(0.8 - (lvl-1)×0.007)^(lvl-1)` 秒/行，每 10 行升级
 
-## 在复刻之上，我们自己的改进
+## 在标准规则之上，我们自己的改进
 
 1. **Web Audio 芯片音乐**：手写音序器循环播放《Korobeiniki》（方波主旋律 + 三角波贝斯，lookahead 调度），可独立开关
 2. **全套合成音效**：移动 / 旋转 / 踢墙 / 锁定 / 消行 / Tetris 和弦 / 升级琶音 / 游戏结束
